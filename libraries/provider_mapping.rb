@@ -1,7 +1,7 @@
 # Encoding: UTF-8
 #
 # Cookbook Name:: parallels
-# Recipe:: default
+# Library:: provider_mapping
 #
 # Copyright 2015 Jonathan Hartman
 #
@@ -18,7 +18,10 @@
 # limitations under the License.
 #
 
-parallels_app 'default' do
-  version node['parallels']['version']
-  action :install
-end
+require 'chef/dsl'
+require 'chef/platform/provider_mapping'
+require_relative 'provider_parallels_app'
+
+Chef::Platform.set(platform: :mac_os_x,
+                   resource: :parallels_app,
+                   provider: Chef::Provider::ParallelsApp::MacOsX)

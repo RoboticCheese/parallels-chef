@@ -1,7 +1,7 @@
 # Encoding: UTF-8
 #
 # Cookbook Name:: parallels
-# Recipe:: default
+# Library:: matchers
 #
 # Copyright 2015 Jonathan Hartman
 #
@@ -18,7 +18,12 @@
 # limitations under the License.
 #
 
-parallels_app 'default' do
-  version node['parallels']['version']
-  action :install
+if defined?(ChefSpec)
+  ChefSpec.define_matcher(:parallels_app)
+
+  [:install, :remove].each do |a|
+    define_method("#{a}_parallels_app") do |name|
+      ChefSpec::Matchers::ResourceMatcher.new(:parallels_app, a, name)
+    end
+  end
 end

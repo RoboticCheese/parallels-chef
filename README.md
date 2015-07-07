@@ -10,65 +10,78 @@ Parallels Cookbook
 [codeclimate]: https://codeclimate.com/github/RoboticCheese/parallels-chef
 [coveralls]: https://coveralls.io/r/RoboticCheese/parallels-chef
 
-TODO: Enter the cookbook description here.
+A Chef cookbook for Parallels.
 
 Requirements
 ============
 
-TODO: Describe cookbook dependencies.
+An OS X machine that can run Parallels is required.
 
 Usage
 =====
 
-TODO: Describe how to use the cookbook.
+Either add the default recipe to your run_list or use the resource directly in
+a recipe of your own.
 
 Recipes
 =======
 
 ***default***
 
-TODO: Describe each component recipe.
+Installs Parallels.
 
 Attributes
 ==========
 
 ***default***
 
-TODO: Describe any noteworthy attributes.
+A specific major version of Parallels (e.g. '10', '9', etc.) can be installed
+if you so desire:
+
+    default['parallels']['version'] = nil
 
 Resources
 =========
 
-***parallels***
+***parallels_app***
 
-TODO: Describe each included resource.
+Used to install or remove Parallels.
 
 Syntax:
 
-    parallels 'my_resource' do
-        attribute1 'value1'
-        action :create
+    parallels_app 'default' do
+        version '9'
+        action :install
     end
 
 Actions:
 
-| Action  | Description  |
-|---------|--------------|
-| action1 | Do something |
+| Action     | Description       |
+|------------|-------------------|
+| `:install` | Install the app   |
+| `:remove`  | Uninstall the app |
 
 Attributes:
 
-| Attribute  | Default        | Description          |
-|------------|----------------|----------------------|
-| attribute1 | `'some_value'` | Do something         |
-| action     | `:create`      | Action(s) to perform |
+| Attribute | Default    | Description                         |
+|-----------|------------|-------------------------------------|
+| version   | `'10'`\*   | A specific major version to install |
+| action    | `:install` | Action(s) to perform                |
+
+* Parallels Desktop 10 is the latest version as of this writing. The default
+  version is hardcoded for now, but work may be done in the future to have it
+  found dynamically during the Chef run.
 
 Providers
 =========
 
-TODO: Describe each included provider
+***Chef::Provider::ParallelsApp::MacOsX***
 
-***Chef::Provider::SomeProvider***
+Provider for OS X platforms.
+
+***Chef::Provider::ParallelsApp***
+
+A parent provider for platform providers to subclass
 
 Contributing
 ============

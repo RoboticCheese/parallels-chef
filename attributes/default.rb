@@ -1,7 +1,7 @@
 # Encoding: UTF-8
 #
 # Cookbook Name:: parallels
-# Recipe:: default
+# Attributes:: default
 #
 # Copyright 2015 Jonathan Hartman
 #
@@ -18,7 +18,4 @@
 # limitations under the License.
 #
 
-parallels_app 'default' do
-  version node['parallels']['version']
-  action :install
-end
+default['parallels']['version'] = nil
