@@ -31,6 +31,8 @@ class Chef
 
       use_inline_resources
 
+      provides :parallels_app, platform_family: 'mac_os_x'
+
       #
       # WhyRun is supported by this provider.
       #
