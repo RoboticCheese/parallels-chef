@@ -45,7 +45,6 @@ class Chef
       #
       action :install do
         install!
-        new_resource.installed(true)
       end
 
       #
@@ -54,7 +53,6 @@ class Chef
       #
       action :remove do
         remove!
-        new_resource.installed(false)
       end
 
       private

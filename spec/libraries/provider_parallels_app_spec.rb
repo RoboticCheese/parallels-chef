@@ -23,12 +23,6 @@ describe Chef::Provider::ParallelsApp do
       expect_any_instance_of(described_class).to receive(:install!)
       provider.action_install
     end
-
-    it 'sets the resource installed status' do
-      p = provider
-      p.action_install
-      expect(p.new_resource.installed?).to eq(true)
-    end
   end
 
   describe '#action_remove' do
@@ -39,12 +33,6 @@ describe Chef::Provider::ParallelsApp do
     it 'calls the child `remove!` method ' do
       expect_any_instance_of(described_class).to receive(:remove!)
       provider.action_remove
-    end
-
-    it 'sets the resource installed status' do
-      p = provider
-      p.action_remove
-      expect(p.new_resource.installed?).to eq(false)
     end
   end
 

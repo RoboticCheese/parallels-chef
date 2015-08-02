@@ -31,14 +31,6 @@ class Chef
       default_action :install
 
       #
-      # Attribute for the app's installed status.
-      #
-      attribute :installed,
-                kind_of: [NilClass, TrueClass, FalseClass],
-                default: nil
-      alias_method :installed?, :installed
-
-      #
       # Allow a user to install a major version of Parallels.
       #
       attribute :version,

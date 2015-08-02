@@ -27,40 +27,6 @@ describe Chef::Resource::ParallelsApp do
     end
   end
 
-  [:installed, :installed?].each do |m|
-    describe "##{m}" do
-      context 'default unknown installed status' do
-        it 'returns nil' do
-          expect(resource.send(m)).to eq(nil)
-        end
-      end
-
-      context 'app installed' do
-        let(:resource) do
-          r = super()
-          r.instance_variable_set(:@installed, true)
-          r
-        end
-
-        it 'returns true' do
-          expect(resource.send(m)).to eq(true)
-        end
-      end
-
-      context 'app not installed' do
-        let(:resource) do
-          r = super()
-          r.instance_variable_set(:@installed, false)
-          r
-        end
-
-        it 'returns false' do
-          expect(resource.send(m)).to eq(false)
-        end
-      end
-    end
-  end
-
   describe '#version' do
     let(:version) { nil }
     let(:resource) do
