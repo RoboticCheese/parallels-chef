@@ -14,7 +14,7 @@ describe 'parallels::provider_mapping' do
     let(:platform) { :mac_os_x }
 
     it 'uses the OS X app provider' do
-      expect(app_provider).to eq(Chef::Provider::ParallelsApp::MacOsX)
+      expect(app_provider).to eq(Chef::Provider::ParallelsApp)
     end
   end
 

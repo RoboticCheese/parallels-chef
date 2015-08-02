@@ -24,4 +24,4 @@ require_relative 'provider_parallels_app'
 
 Chef::Platform.set(platform: :mac_os_x,
                    resource: :parallels_app,
-                   provider: Chef::Provider::ParallelsApp::MacOsX)
+                   provider: Chef::Provider::ParallelsApp)

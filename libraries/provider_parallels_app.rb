@@ -20,7 +20,6 @@
 
 require 'chef/provider/lwrp_base'
 require_relative 'resource_parallels_app'
-require_relative 'provider_parallels_app_mac_os_x'
 
 class Chef
   class Provider
@@ -28,6 +27,8 @@ class Chef
     #
     # @author Jonathan Hartman <j@p4nt5.com>
     class ParallelsApp < Provider::LWRPBase
+      PATH ||= '/Applications/Parallels Desktop.app'
+
       use_inline_resources
 
       #
@@ -40,41 +41,58 @@ class Chef
       end
 
       #
-      # Install the app if it's not already and set the new_resource installed
-      # status to true.
+      # Use a dmg_package resource to download and install the app.
       #
       action :install do
-        install!
+        s = remote_path
+        v = version
+        dmg_package 'Parallels Desktop' do
+          source s
+          volumes_dir "Parallels Desktop #{v}"
+          action :install
+        end
       end
 
       #
-      # Remove the app if it's installed and set the new_resource installed
-      # status to false.
+      # For lack of a package manager, delete all of Parallels' directories.
       #
       action :remove do
-        remove!
+        [
+          PATH,
+          '/Applications/Parallels Access.app'
+        ].each do |d|
+          directory d do
+            recursive true
+            action :delete
+          end
+        end
       end
 
       private
 
       #
-      # Do the actual app installation.
+      # Use the resource's version attribute to construct a Parallels URL,
+      # then follow the redirect to a .dmg file.
       #
-      # @raise [NotImplementedError] if not defined for this provider.
+      # @return [String] a download URL
       #
-      def install!
-        fail(NotImplementedError,
-             "`install!` method not implemented for #{self.class} provider")
+      def remote_path
+        @remote_path ||= begin
+          # While www. is served up over HTTPS, it still redirects to an HTTP
+          # download, so let's not bother with configuring SSL.
+          uri = URI("http://www.parallels.com/directdownload/pd#{version}/")
+          Net::HTTP.get_response(uri)['location']
+        end
       end
 
       #
-      # Do the actual app removal.
+      # Return either the new_resource's version or, eventually, have logic
+      # that can dynamically figure out what the latest major version is.
       #
-      # @raise [NotImplementedError] if not defined for this provider.
+      # @return [String] a version string for this provider to use
       #
-      def remove!
-        fail(NotImplementedError,
-             "`remove!` method not implemented for #{self.class} provider")
+      def version
+        new_resource.version # TODO: || Parallels::Helpers.latest_version
       end
     end
   end
