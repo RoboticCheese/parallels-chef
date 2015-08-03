@@ -36,35 +36,120 @@ describe Chef::Provider::ParallelsApp do
   end
 
   describe '#action_install' do
-    before(:each) do
-      allow_any_instance_of(described_class).to receive(:remote_path)
-        .and_return('http://example.com/parallels.dmg')
-      allow_any_instance_of(described_class).to receive(:version)
-        .and_return('9')
-    end
-
-    it 'uses a dmg_package to install Parallels' do
+    it 'downloads, mounts, installs, and unmounts the package' do
       p = provider
-      expect(p).to receive(:dmg_package).with('Parallels Desktop').and_yield
-      expect(p).to receive(:source).with('http://example.com/parallels.dmg')
-      expect(p).to receive(:volumes_dir).with('Parallels Desktop 9')
-      expect(p).to receive(:action).with(:install)
+      [
+        :download_package, :mount_package, :install_package, :unmount_package
+      ].each do |m|
+        expect(p).to receive(m)
+      end
       p.action_install
     end
   end
 
   describe '#action_remove' do
-    it 'removes all the Parallels directories' do
+    it 'runs the uninstall script' do
       p = provider
-      [
-        described_class::PATH,
-        '/Applications/Parallels Access.app'
-      ].each do |d|
-        expect(p).to receive(:directory).with(d).and_yield
-        expect(p).to receive(:recursive).with(true)
-        expect(p).to receive(:action).with(:delete)
-      end
+      expect(p).to receive(:execute).with('Uninstall Parallels').and_yield
+      expect(p).to receive(:command).with('/Applications/Parallels\\ Desktop' \
+                                          '.app/Contents/MacOS/Uninstaller ' \
+                                          'remove')
+      expect(p).to receive(:action).with(:run)
+      expect(p).to receive(:only_if).and_yield
+      expect(File).to receive(:exist?).with(described_class::PATH)
       p.action_remove
+    end
+  end
+
+  describe '#unmount_package' do
+    before(:each) do
+      allow_any_instance_of(described_class).to receive(:download_path)
+        .and_return('/tmp/parallels.dmg')
+      allow_any_instance_of(described_class).to receive(:version).and_return(4)
+    end
+
+    it 'unmounts the .dmg package' do
+      p = provider
+      expect(p).to receive(:execute).with('Unmount Parallels .dmg package')
+        .and_yield
+      expect(p).to receive(:command).with("hdiutil detach '/Volumes/" \
+                                          "Parallels Desktop 4' || " \
+                                          "hdiutil detach '/Volumes/" \
+                                          "Parallels Desktop 4' -force")
+      expect(p).to receive(:action).with(:run)
+      expect(p).to receive(:only_if)
+        .with("hdiutil info | grep -q 'image-path.*/tmp/parallels.dmg'")
+      p.send(:unmount_package)
+    end
+  end
+
+  describe '#install_package' do
+    before(:each) do
+      allow_any_instance_of(described_class).to receive(:version).and_return(4)
+    end
+
+    it 'runs the installer script' do
+      p = provider
+      expect(p).to receive(:execute).with('Run Parallels installer').and_yield
+      expect(p).to receive(:command).with('/Volumes/Parallels\\ Desktop\\ 4/' \
+                                          'Parallels\\ Desktop.app/Contents/' \
+                                          'MacOS/inittool install -t ' \
+                                          "'/Applications/Parallels Desktop" \
+                                          ".app'")
+      expect(p).to receive(:creates).with(described_class::PATH)
+      expect(p).to receive(:action).with(:run)
+      p.send(:install_package)
+    end
+  end
+
+  describe '#mount_package' do
+    before(:each) do
+      allow_any_instance_of(described_class).to receive(:download_path)
+        .and_return('/tmp/parallels.dmg')
+    end
+
+    it 'mounts the .dmg package' do
+      p = provider
+      expect(p).to receive(:execute).with('Mount Parallels .dmg package')
+        .and_yield
+      expect(p).to receive(:command).with("hdiutil attach '/tmp/parallels.dmg'")
+      expect(p).to receive(:action).with(:run)
+      expect(p).to receive(:not_if)
+        .with("hdiutil info | grep -q 'image-path.*/tmp/parallels.dmg'")
+      expect(p).to receive(:not_if).and_yield
+      expect(File).to receive(:exist?).with(described_class::PATH)
+      p.send(:mount_package)
+    end
+  end
+
+  describe '#download_package' do
+    before(:each) do
+      allow_any_instance_of(described_class).to receive(:remote_path)
+        .and_return('http://example.com/parallels.dmg')
+      allow_any_instance_of(described_class).to receive(:download_path)
+        .and_return('/tmp/parallels.dmg')
+    end
+
+    it 'downloads the .dmg package' do
+      p = provider
+      expect(p).to receive(:remote_file).with('/tmp/parallels.dmg').and_yield
+      expect(p).to receive(:source).with('http://example.com/parallels.dmg')
+      expect(p).to receive(:action).with(:create)
+      expect(p).to receive(:not_if).and_yield
+      expect(File).to receive(:exist?).with(described_class::PATH)
+      p.send(:download_package)
+    end
+  end
+
+  describe '#download_path' do
+    before(:each) do
+      allow_any_instance_of(described_class).to receive(:remote_path)
+        .and_return('http://example.com/parallels.dmg')
+    end
+
+    it 'returns a path in the Chef cache path' do
+      expected = "#{Chef::Config[:file_cache_path]}/parallels.dmg"
+      expect(provider.send(:download_path)).to eq(expected)
     end
   end
 
