@@ -18,9 +18,9 @@
 # limitations under the License.
 #
 
+require 'chef/mixin/shell_out'
 require 'chef/provider/lwrp_base'
 require_relative 'resource_parallels_app'
-require_relative 'provider_parallels_app_mac_os_x'
 
 class Chef
   class Provider
@@ -28,7 +28,13 @@ class Chef
     #
     # @author Jonathan Hartman <j@p4nt5.com>
     class ParallelsApp < Provider::LWRPBase
+      PATH ||= '/Applications/Parallels Desktop.app'
+
       use_inline_resources
+
+      provides :parallels_app, platform_family: 'mac_os_x'
+
+      include Chef::Mixin::ShellOut
 
       #
       # WhyRun is supported by this provider.
@@ -40,43 +46,115 @@ class Chef
       end
 
       #
-      # Install the app if it's not already and set the new_resource installed
-      # status to true.
+      # Use a dmg_package resource to download and install the app.
       #
       action :install do
-        install!
-        new_resource.installed(true)
+        download_package
+        mount_package
+        install_package
+        unmount_package
       end
 
       #
-      # Remove the app if it's installed and set the new_resource installed
-      # status to false.
+      # Use an execute resource to call Parallels' included uninstall script.
       #
       action :remove do
-        remove!
-        new_resource.installed(false)
+        un = ::File.join(PATH, 'Contents/MacOS/Uninstaller').gsub(' ', '\\ ')
+        execute 'Uninstall Parallels' do
+          command "#{un} remove"
+          action :run
+          only_if { ::File.exist?(PATH) }
+        end
       end
 
       private
 
       #
-      # Do the actual app installation.
+      # Use an execute resource to call hdiutil and unmount the .dmg package.
       #
-      # @raise [NotImplementedError] if not defined for this provider.
-      #
-      def install!
-        fail(NotImplementedError,
-             "`install!` method not implemented for #{self.class} provider")
+      def unmount_package
+        dmg = download_path
+        cmd = "hdiutil detach '/Volumes/Parallels Desktop #{version}' || " \
+              "hdiutil detach '/Volumes/Parallels Desktop #{version}' -force"
+        execute 'Unmount Parallels .dmg package' do
+          command cmd
+          action :run
+          only_if "hdiutil info | grep -q 'image-path.*#{dmg}'"
+        end
       end
 
       #
-      # Do the actual app removal.
+      # Use an execute resource to run the package's included install script.
       #
-      # @raise [NotImplementedError] if not defined for this provider.
+      def install_package
+        init = ::File.join("/Volumes/Parallels Desktop #{version}",
+                           ::File.basename(PATH),
+                           'Contents/MacOS/inittool').gsub(' ', '\\ ')
+        execute 'Run Parallels installer' do
+          command "#{init} install -t '#{PATH}'"
+          creates PATH
+          action :run
+        end
+      end
+
       #
-      def remove!
-        fail(NotImplementedError,
-             "`remove!` method not implemented for #{self.class} provider")
+      # Use an execute resource to call hdiutil and mount the .dmg package.
+      #
+      def mount_package
+        dmg = download_path
+        execute 'Mount Parallels .dmg package' do
+          command "hdiutil attach '#{dmg}'"
+          action :run
+          not_if "hdiutil info | grep -q 'image-path.*#{dmg}'"
+          not_if { ::File.exist?(PATH) }
+        end
+      end
+
+      #
+      # Use a remote_file resource to download the .dmg package.
+      #
+      def download_package
+        s = remote_path
+        remote_file download_path do
+          source s
+          action :create
+          not_if { ::File.exist?(PATH) }
+        end
+      end
+
+      #
+      # Construct a .dmg file download path under Chef's cache dir.
+      #
+      # @return [String] a local path to download Parallels to
+      #
+      def download_path
+        ::File.join(Chef::Config[:file_cache_path],
+                    ::File.basename(remote_path))
+      end
+
+      #
+      # Use the resource's version attribute to construct a Parallels URL,
+      # then follow the redirect to a .dmg file.
+      #
+      # @return [String] a download URL
+      #
+      def remote_path
+        @remote_path ||= begin
+          # While www. is served up over HTTPS, it still redirects to an HTTP
+          # download, so let's not bother with configuring SSL.
+          uri = URI("http://www.parallels.com/directdownload/pd#{version}/")
+          Net::HTTP.get_response(uri)['location']
+        end
+      end
+
+      #
+      # Return either the new_resource's version or, eventually, have logic
+      # that can dynamically figure out what the latest major version is.
+      #
+      # @return [String] a version string for this provider to use
+      #
+      def version
+        new_resource.version # TODO: || Parallels::Helpers.latest_version
       end
     end
   end
