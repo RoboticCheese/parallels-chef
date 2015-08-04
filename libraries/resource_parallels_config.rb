@@ -1,7 +1,7 @@
 # Encoding: UTF-8
 #
 # Cookbook Name:: parallels
-# Library:: matchers
+# Library:: resource_parallels_config
 #
 # Copyright 2015 Jonathan Hartman
 #
@@ -18,24 +18,22 @@
 # limitations under the License.
 #
 
-if defined?(ChefSpec)
-  ChefSpec.define_matcher(:parallels_app)
+require 'chef/resource/lwrp_base'
 
-  [:install, :remove, :configure].each do |a|
-    define_method("#{a}_parallels") do |name|
-      ChefSpec::Matchers::ResourceMatcher.new(:parallels, a, name)
-    end
-  end
+class Chef
+  class Resource
+    # A resource for Parallels Desktop's license configuration.
+    #
+    # @author Jonathan Hartman <j@p4nt5.com>
+    class ParallelsConfig < Resource::LWRPBase
+      self.resource_name = :parallels_config
+      actions :create
+      default_action :create
 
-  [:install, :remove].each do |a|
-    define_method("#{a}_parallels_app") do |name|
-      ChefSpec::Matchers::ResourceMatcher.new(:parallels_app, a, name)
-    end
-  end
-
-  [:create].each do |a|
-    define_method("#{a}_parallels_config") do |name|
-      ChefSpec::Matchers::ResourceMatcher.new(:parallels_config, a, name)
+      #
+      # Attribute for an optional Parallels license key
+      #
+      attribute :license, kind_of: String, default: nil
     end
   end
 end

@@ -28,7 +28,8 @@ Recipes
 
 ***default***
 
-Installs Parallels.
+Installs Parallels, with an optional license key and/or at an optional major
+version.
 
 Attributes
 ==========
@@ -40,8 +41,40 @@ if you so desire:
 
     default['parallels']['version'] = nil
 
+A valid license key can be provided:
+
+    default['parallels']['license'] = nil
+
 Resources
 =========
+
+***parallels***
+
+A parent resource that wraps both installation and configuration.
+
+Syntax:
+
+    parallels 'default' do
+        version '9'
+        license 'abcd-efgh-ijkl-mnop'
+        action [:install, :configure]
+    end
+
+Actions:
+
+| Action       | Description                           |
+|--------------|---------------------------------------|
+| `:install`   | Install the app                       |
+| `:remove`    | Uninstall the app                     |
+| `:configure` | Configure with a license, if provided |
+
+Attributes:
+
+| Attribute | Default                  | Description                         |
+|-----------|--------------------------|-------------------------------------|
+| version   | `'10'`                   | A specific major version to install |
+| license   | `nil`                    | A Parallels license key             |
+| action    | `[:install, :configure]` | Action(s) to perform                |
 
 ***parallels_app***
 
@@ -72,16 +105,44 @@ Attributes:
   version is hardcoded for now, but work may be done in the future to have it
   found dynamically during the Chef run.
 
+***parallels_config***
+
+Used to register an optional license with Parallels.
+
+Syntax:
+
+    parallels_config 'default' do
+        license 'abcd-efgh-ijkl-mnop'
+        action :create
+    end
+
+Actions:
+
+| Action    | Description                           |
+|-----------|---------------------------------------|
+| `:create` | Configure with a license, if provided |
+
+Attributes:
+
+| Attribute | Default   | Description             |
+|-----------|-----------|-------------------------|
+| license   | `nil`     | A Parallels license key |
+| action    | `:create` | Action(s) to perform    |
+
 Providers
 =========
 
-***Chef::Provider::ParallelsApp::MacOsX***
+***Chef::Provider::Parallels***
 
-Provider for OS X platforms.
+Parent provider that wraps installation and configuration under one resource.
 
 ***Chef::Provider::ParallelsApp***
 
-A parent provider for platform providers to subclass
+Provider for app installation/removal.
+
+***Chef::Provider::ParallelsConfig***
+
+Provider for configuration.
 
 Contributing
 ============

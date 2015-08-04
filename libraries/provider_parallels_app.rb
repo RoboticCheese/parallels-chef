@@ -21,15 +21,14 @@
 require 'chef/mixin/shell_out'
 require 'chef/provider/lwrp_base'
 require_relative 'resource_parallels_app'
+require_relative 'provider_parallels'
 
 class Chef
   class Provider
-    # A parent Chef provider for the Parallels app.
+    # A Chef provider for the Parallels app.
     #
     # @author Jonathan Hartman <j@p4nt5.com>
     class ParallelsApp < Provider::LWRPBase
-      PATH ||= '/Applications/Parallels Desktop.app'
-
       use_inline_resources
 
       provides :parallels_app, platform_family: 'mac_os_x'
@@ -59,11 +58,12 @@ class Chef
       # Use an execute resource to call Parallels' included uninstall script.
       #
       action :remove do
-        un = ::File.join(PATH, 'Contents/MacOS/Uninstaller').gsub(' ', '\\ ')
+        un = ::File.join(Parallels::PATH,
+                         'Contents/MacOS/Uninstaller').gsub(' ', '\\ ')
         execute 'Uninstall Parallels' do
           command "#{un} remove"
           action :run
-          only_if { ::File.exist?(PATH) }
+          only_if { ::File.exist?(Parallels::PATH) }
         end
       end
 
@@ -88,11 +88,11 @@ class Chef
       #
       def install_package
         init = ::File.join("/Volumes/Parallels Desktop #{version}",
-                           ::File.basename(PATH),
+                           ::File.basename(Parallels::PATH),
                            'Contents/MacOS/inittool').gsub(' ', '\\ ')
         execute 'Run Parallels installer' do
-          command "#{init} install -t '#{PATH}'"
-          creates PATH
+          command "#{init} install -t '#{Parallels::PATH}' -s"
+          creates Parallels::PATH
           action :run
         end
       end
@@ -106,7 +106,7 @@ class Chef
           command "hdiutil attach '#{dmg}'"
           action :run
           not_if "hdiutil info | grep -q 'image-path.*#{dmg}'"
-          not_if { ::File.exist?(PATH) }
+          not_if { ::File.exist?(Parallels::PATH) }
         end
       end
 
@@ -118,7 +118,7 @@ class Chef
         remote_file download_path do
           source s
           action :create
-          not_if { ::File.exist?(PATH) }
+          not_if { ::File.exist?(Parallels::PATH) }
         end
       end
 

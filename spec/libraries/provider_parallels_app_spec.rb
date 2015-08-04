@@ -8,13 +8,6 @@ describe Chef::Provider::ParallelsApp do
   let(:new_resource) { Chef::Resource::ParallelsApp.new(name, nil) }
   let(:provider) { described_class.new(new_resource, nil) }
 
-  describe 'PATH' do
-    it 'returns the app directory' do
-      expected = '/Applications/Parallels Desktop.app'
-      expect(described_class::PATH).to eq(expected)
-    end
-  end
-
   describe '.provides?' do
     let(:platform) { nil }
     let(:node) { ChefSpec::Macros.stub_node('node.example', platform) }
@@ -56,7 +49,8 @@ describe Chef::Provider::ParallelsApp do
                                           'remove')
       expect(p).to receive(:action).with(:run)
       expect(p).to receive(:only_if).and_yield
-      expect(File).to receive(:exist?).with(described_class::PATH)
+      expect(File).to receive(:exist?)
+        .with('/Applications/Parallels Desktop.app')
       p.action_remove
     end
   end
@@ -95,8 +89,8 @@ describe Chef::Provider::ParallelsApp do
                                           'Parallels\\ Desktop.app/Contents/' \
                                           'MacOS/inittool install -t ' \
                                           "'/Applications/Parallels Desktop" \
-                                          ".app'")
-      expect(p).to receive(:creates).with(described_class::PATH)
+                                          ".app' -s")
+      expect(p).to receive(:creates).with('/Applications/Parallels Desktop.app')
       expect(p).to receive(:action).with(:run)
       p.send(:install_package)
     end
@@ -117,7 +111,8 @@ describe Chef::Provider::ParallelsApp do
       expect(p).to receive(:not_if)
         .with("hdiutil info | grep -q 'image-path.*/tmp/parallels.dmg'")
       expect(p).to receive(:not_if).and_yield
-      expect(File).to receive(:exist?).with(described_class::PATH)
+      expect(File).to receive(:exist?)
+        .with('/Applications/Parallels Desktop.app')
       p.send(:mount_package)
     end
   end
@@ -136,7 +131,8 @@ describe Chef::Provider::ParallelsApp do
       expect(p).to receive(:source).with('http://example.com/parallels.dmg')
       expect(p).to receive(:action).with(:create)
       expect(p).to receive(:not_if).and_yield
-      expect(File).to receive(:exist?).with(described_class::PATH)
+      expect(File).to receive(:exist?)
+        .with('/Applications/Parallels Desktop.app')
       p.send(:download_package)
     end
   end
