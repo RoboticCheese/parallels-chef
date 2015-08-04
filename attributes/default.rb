@@ -19,3 +19,4 @@
 #
 
 default['parallels']['version'] = nil
+default['parallels']['license'] = nil

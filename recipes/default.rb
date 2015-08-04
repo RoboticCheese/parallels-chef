@@ -18,7 +18,8 @@
 # limitations under the License.
 #
 
-parallels_app 'default' do
+parallels 'default' do
   version node['parallels']['version']
-  action :install
+  license node['parallels']['license']
+  action [:install, :configure]
 end
