@@ -19,7 +19,7 @@
 #
 
 parallels 'default' do
-  version node['parallels']['version']
-  license node['parallels']['license']
+  version node['parallels']['version'] if node['parallels']['version']
+  license node['parallels']['license'] if node['parallels']['license']
   action [:install, :configure]
 end

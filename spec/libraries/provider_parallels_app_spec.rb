@@ -5,8 +5,9 @@ require_relative '../../libraries/provider_parallels_app'
 
 describe Chef::Provider::ParallelsApp do
   let(:name) { 'default' }
-  let(:new_resource) { Chef::Resource::ParallelsApp.new(name, nil) }
-  let(:provider) { described_class.new(new_resource, nil) }
+  let(:run_context) { ChefSpec::SoloRunner.new.converge.run_context }
+  let(:new_resource) { Chef::Resource::ParallelsApp.new(name, run_context) }
+  let(:provider) { described_class.new(new_resource, run_context) }
 
   describe '.provides?' do
     let(:platform) { nil }
@@ -144,8 +145,9 @@ describe Chef::Provider::ParallelsApp do
     end
 
     it 'returns a path in the Chef cache path' do
-      expected = "#{Chef::Config[:file_cache_path]}/parallels.dmg"
-      expect(provider.send(:download_path)).to eq(expected)
+      expect(provider.send(:download_path)).to eq(
+        "#{Chef::Config[:file_cache_path]}/parallels.dmg"
+      )
     end
   end
 

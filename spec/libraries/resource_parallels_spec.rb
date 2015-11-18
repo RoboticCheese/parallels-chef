@@ -5,26 +5,21 @@ require_relative '../../libraries/resource_parallels_app'
 
 describe Chef::Resource::Parallels do
   let(:name) { 'default' }
-  let(:resource) { described_class.new(name, nil) }
+  let(:run_context) { ChefSpec::SoloRunner.new.converge.run_context }
+  let(:resource) { described_class.new(name, run_context) }
 
   describe '#initialize' do
     it 'sets the correct resource name' do
-      exp = :parallels
-      expect(resource.resource_name).to eq(exp)
+      expect(resource.resource_name).to eq(:parallels)
     end
 
     it 'sets the correct supported actions' do
       expected = [:nothing, :install, :remove, :configure]
-      expect(resource.instance_variable_get(:@allowed_actions)).to eq(expected)
+      expect(resource.allowed_actions).to eq(expected)
     end
 
     it 'sets the correct default action' do
-      expected = [:install, :configure]
-      expect(resource.instance_variable_get(:@action)).to eq(expected)
-    end
-
-    it 'sets the installed status to nil' do
-      expect(resource.instance_variable_get(:@installed)).to eq(nil)
+      expect(resource.action).to eq([:install, :configure])
     end
   end
 

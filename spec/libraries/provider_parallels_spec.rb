@@ -5,8 +5,9 @@ require_relative '../../libraries/provider_parallels'
 
 describe Chef::Provider::Parallels do
   let(:name) { 'default' }
-  let(:new_resource) { Chef::Resource::Parallels.new(name, nil) }
-  let(:provider) { described_class.new(new_resource, nil) }
+  let(:run_context) { ChefSpec::SoloRunner.new.converge.run_context }
+  let(:new_resource) { Chef::Resource::Parallels.new(name, run_context) }
+  let(:provider) { described_class.new(new_resource, run_context) }
 
   describe 'PATH' do
     it 'returns the app directory' do
