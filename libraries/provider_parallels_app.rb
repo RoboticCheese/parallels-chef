@@ -20,8 +20,8 @@
 
 require 'chef/mixin/shell_out'
 require 'chef/provider/lwrp_base'
+require_relative 'resource_parallels'
 require_relative 'resource_parallels_app'
-require_relative 'provider_parallels'
 
 class Chef
   class Provider

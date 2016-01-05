@@ -18,5 +18,5 @@
 # limitations under the License.
 #
 
-default['parallels']['version'] = nil
-default['parallels']['license'] = nil
+default['parallels']['app']['version'] = nil
+default['parallels']['config']['license'] = nil
