@@ -9,3 +9,5 @@ cookbook 'resource_parallels_test',
          path: 'spec/support/cookbooks/resource_parallels_test'
 cookbook 'resource_parallels_app_test',
          path: 'spec/support/cookbooks/resource_parallels_app_test'
+cookbook 'resource_parallels_config_test',
+         path: 'spec/support/cookbooks/resource_parallels_config_test'

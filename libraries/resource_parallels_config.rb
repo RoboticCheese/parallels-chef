@@ -18,22 +18,34 @@
 # limitations under the License.
 #
 
-require 'chef/resource/lwrp_base'
+require 'chef/resource'
+require_relative 'resource_parallels'
 
 class Chef
   class Resource
     # A resource for Parallels Desktop's license configuration.
     #
     # @author Jonathan Hartman <j@p4nt5.com>
-    class ParallelsConfig < Resource::LWRPBase
-      self.resource_name = :parallels_config
-      actions :create
+    class ParallelsConfig < Resource
+      provides :parallels_config, platform_family: 'mac_os_x'
+
+      property :license, kind_of: [String, nil], default: nil
+
       default_action :create
 
       #
-      # Attribute for an optional Parallels license key
+      # Use an execute resource to feed the license key, if offered, to
+      # Parallels.
       #
-      attribute :license, kind_of: String, default: nil
+      action :create do
+        ctl = ::File.join(Parallels::PATH, 'Contents/MacOS/prlsrvctl')
+              .gsub(' ', '\\ ')
+        execute 'Install Parallels license' do
+          command "#{ctl} install-license -k #{license}"
+          only_if { license }
+          not_if "#{ctl} info --license | grep 'status=\"ACTIVE\"'"
+        end
+      end
     end
   end
 end
