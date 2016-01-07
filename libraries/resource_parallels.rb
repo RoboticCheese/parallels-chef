@@ -28,8 +28,6 @@ class Chef
     #
     # @author Jonathan Hartman <j@p4nt5.com>
     class Parallels < Resource
-      PATH ||= '/Applications/Parallels Desktop.app'
-
       provides :parallels, platform_family: 'mac_os_x'
 
       #

@@ -19,7 +19,7 @@
 #
 
 require 'chef/resource'
-require_relative 'resource_parallels'
+require_relative 'resource_parallels_app'
 
 class Chef
   class Resource
@@ -38,7 +38,7 @@ class Chef
       # Parallels.
       #
       action :create do
-        ctl = ::File.join(Parallels::PATH, 'Contents/MacOS/prlsrvctl')
+        ctl = ::File.join(ParallelsApp::PATH, 'Contents/MacOS/prlsrvctl')
               .gsub(' ', '\\ ')
         execute 'Install Parallels license' do
           command "#{ctl} install-license -k #{license}"
