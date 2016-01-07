@@ -34,7 +34,7 @@ describe 'resource_parallels_app::mac_os_x::10_10' do
     shared_examples_for 'not installed' do
       it 'downloads the Parallels package' do
         expect(chef_run).to create_remote_file(
-          "/tmp/chef/cache/parallels.dmg"
+          '/tmp/chef/cache/parallels.dmg'
         ).with(source: 'http://example.com/parallels.dmg')
       end
 

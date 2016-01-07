@@ -34,12 +34,12 @@ class Chef
       # Allow a user to install a major version of Parallels.
       #
       property :version,
-                kind_of: [String, Fixnum, nil],
-                default: '10',
-                callbacks: { 'Not a valid major version' =>
-                               lambda do |a|
-                                 a.is_a?(Fixnum) || !a.match(/^[0-9]+$/).nil?
-                               end }
+               kind_of: [String, Fixnum, nil],
+               default: '10',
+               callbacks: { 'Not a valid major version' =>
+                              lambda do |a|
+                                a.is_a?(Fixnum) || !a.match(/^[0-9]+$/).nil?
+                              end }
 
       default_action :install
 
