@@ -29,7 +29,7 @@ class Chef
     class ParallelsConfig < Resource
       provides :parallels_config, platform_family: 'mac_os_x'
 
-      property :license, kind_of: [String, nil], default: nil
+      property :license, [String, nil], default: nil
 
       default_action :create
 

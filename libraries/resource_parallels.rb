@@ -34,8 +34,8 @@ class Chef
       # Allow a user to install a major version of Parallels.
       #
       property :version,
-               kind_of: [String, Fixnum, nil],
-               default: '11',
+               [String, Fixnum, nil],
+               default: nil,
                callbacks: { 'Not a valid major version' =>
                               lambda do |a|
                                 a.is_a?(Fixnum) || !a.match(/^[0-9]+$/).nil?
@@ -44,12 +44,12 @@ class Chef
       #
       # Property for an optional Parallels license key
       #
-      property :license, kind_of: [String, nil], default: nil
+      property :license, [String, nil], default: nil
 
       #
       # TODO: Property for an optional specific package URL.
       #
-      # property :source, kind_of: [String, nil], default: nil
+      # property :source, [String, nil], default: nil
 
       default_action [:install, :configure]
 
@@ -58,7 +58,7 @@ class Chef
       #
       action :install do
         parallels_app 'default' do
-          version new_resource.version
+          version new_resource.version unless new_resource.version.nil?
         end
       end
 

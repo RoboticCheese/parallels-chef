@@ -73,7 +73,7 @@ Properties:
 
 | Property | Default                  | Description                         |
 |----------|--------------------------|-------------------------------------|
-| version  | `'11'`                   | A specific major version to install |
+| version  | `nil`                    | A specific major version to install |
 | license  | `nil`                    | A Parallels license key             |
 | action   | `[:install, :configure]` | Action(s) to perform                |
 
