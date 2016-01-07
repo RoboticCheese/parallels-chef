@@ -35,7 +35,7 @@ class Chef
       #
       property :version,
                kind_of: [String, Fixnum, nil],
-               default: '10',
+               default: '11',
                callbacks: { 'Not a valid major version' =>
                               lambda do |a|
                                 a.is_a?(Fixnum) || !a.match(/^[0-9]+$/).nil?

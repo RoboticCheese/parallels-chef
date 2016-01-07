@@ -21,7 +21,7 @@ describe 'resource_parallels_app::mac_os_x::10_10' do
 
     before(:each) do
       allow(Net::HTTP).to receive(:get_response).with(
-        URI("http://www.parallels.com/directdownload/pd#{version || 10}/")
+        URI("http://www.parallels.com/directdownload/pd#{version || 11}/")
       ).and_return('location' => 'http://example.com/parallels.dmg')
       allow(File).to receive(:exist?).and_call_original
       allow(File).to receive(:exist?)
@@ -46,7 +46,7 @@ describe 'resource_parallels_app::mac_os_x::10_10' do
 
       it 'runs the Parallels installer' do
         expect(chef_run).to run_execute('Run Parallels installer').with(
-          command: "/Volumes/Parallels\\ Desktop\\ #{version || 10}/" \
+          command: "/Volumes/Parallels\\ Desktop\\ #{version || 11}/" \
                    'Parallels\\ Desktop.app/Contents/MacOS/inittool install ' \
                    "-t '/Applications/Parallels Desktop.app' -s",
           creates: '/Applications/Parallels Desktop.app'
@@ -90,8 +90,8 @@ describe 'resource_parallels_app::mac_os_x::10_10' do
       it 'unmounts the Parallels package' do
         expect(chef_run).to run_execute('Unmount Parallels .dmg package').with(
           command: "hdiutil detach '/Volumes/Parallels Desktop " \
-                   "#{version || 10}' || hdiutil detach '/Volumes/Parallels " \
-                   "Desktop #{version || 10}' -force"
+                   "#{version || 11}' || hdiutil detach '/Volumes/Parallels " \
+                   "Desktop #{version || 11}' -force"
         )
       end
     end

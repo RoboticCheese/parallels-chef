@@ -22,7 +22,7 @@ describe 'resource_parallels::mac_os_x::10_10' do
     shared_examples_for 'any attribute set' do
       it 'installs the Parallels app' do
         expect(chef_run).to install_parallels_app('default')
-          .with(version: (version || '10'))
+          .with(version: (version || '11'))
       end
     end
 

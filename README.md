@@ -37,7 +37,7 @@ Attributes
 
 ***default***
 
-A specific major version of Parallels (e.g. '10', '9', etc.) can be installed
+A specific major version of Parallels (e.g. '11', '10', etc.) can be installed
 if you so desire:
 
     default['parallels']['app']['version'] = nil
@@ -56,7 +56,7 @@ A parent resource that wraps both installation and configuration.
 Syntax:
 
     parallels 'default' do
-        version '10'
+        version '11'
         license 'abcd-efgh-ijkl-mnop'
         action [:install, :configure]
     end
@@ -73,7 +73,7 @@ Properties:
 
 | Property | Default                  | Description                         |
 |----------|--------------------------|-------------------------------------|
-| version  | `'10'`                   | A specific major version to install |
+| version  | `'11'`                   | A specific major version to install |
 | license  | `nil`                    | A Parallels license key             |
 | action   | `[:install, :configure]` | Action(s) to perform                |
 
@@ -99,10 +99,10 @@ Properties:
 
 | Property | Default    | Description                         |
 |----------|------------|-------------------------------------|
-| version  | `'10'`\*   | A specific major version to install |
+| version  | `'11'`\*   | A specific major version to install |
 | action   | `:install` | Action(s) to perform                |
 
-* Parallels Desktop 10 is the latest version as of this writing. The default
+* Parallels Desktop 11 is the latest version as of this writing. The default
   version is hardcoded for now, but work may be done in the future to have it
   found dynamically during the Chef run.
 

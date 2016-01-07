@@ -15,8 +15,8 @@ describe 'parallels::default' do
   context 'default attribute' do
     let(:overrides) { {} }
 
-    it 'installs Parallels with version 10' do
-      expect(chef_run).to install_parallels('default').with(version: '10')
+    it 'installs Parallels with version 11' do
+      expect(chef_run).to install_parallels('default').with(version: '11')
     end
 
     it 'configures Parallels with no license' do
@@ -25,10 +25,10 @@ describe 'parallels::default' do
   end
 
   context 'an overridden version attribute' do
-    let(:overrides) { { parallels: { app: { version: '9' } } } }
+    let(:overrides) { { parallels: { app: { version: '10' } } } }
 
     it 'installs Parallels with the given version' do
-      expect(chef_run).to install_parallels('default').with(version: '9')
+      expect(chef_run).to install_parallels('default').with(version: '10')
     end
   end
 
