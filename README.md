@@ -15,13 +15,14 @@ A Chef cookbook for Parallels.
 Requirements
 ============
 
-An OS X machine that can run Parallels is required.
+An OS X machine that can run Parallels and Chef >= 12.5 (or Chef ~> 12.0 and
+the compat_resource cookbook) are required.
 
 Usage
 =====
 
-Either add the default recipe to your run_list or use the resource directly in
-a recipe of your own.
+Either add the default recipe to your run_list or use the custom resources
+directly in a recipe of your own.
 
 Recipes
 =======
@@ -39,11 +40,11 @@ Attributes
 A specific major version of Parallels (e.g. '10', '9', etc.) can be installed
 if you so desire:
 
-    default['parallels']['version'] = nil
+    default['parallels']['app']['version'] = nil
 
 A valid license key can be provided:
 
-    default['parallels']['license'] = nil
+    default['parallels']['config']['license'] = nil
 
 Resources
 =========
@@ -55,7 +56,7 @@ A parent resource that wraps both installation and configuration.
 Syntax:
 
     parallels 'default' do
-        version '9'
+        version '10'
         license 'abcd-efgh-ijkl-mnop'
         action [:install, :configure]
     end
@@ -68,13 +69,13 @@ Actions:
 | `:remove`    | Uninstall the app                     |
 | `:configure` | Configure with a license, if provided |
 
-Attributes:
+Properties:
 
-| Attribute | Default                  | Description                         |
-|-----------|--------------------------|-------------------------------------|
-| version   | `'10'`                   | A specific major version to install |
-| license   | `nil`                    | A Parallels license key             |
-| action    | `[:install, :configure]` | Action(s) to perform                |
+| Property | Default                  | Description                         |
+|----------|--------------------------|-------------------------------------|
+| version  | `'10'`                   | A specific major version to install |
+| license  | `nil`                    | A Parallels license key             |
+| action   | `[:install, :configure]` | Action(s) to perform                |
 
 ***parallels_app***
 
@@ -94,12 +95,12 @@ Actions:
 | `:install` | Install the app   |
 | `:remove`  | Uninstall the app |
 
-Attributes:
+Properties:
 
-| Attribute | Default    | Description                         |
-|-----------|------------|-------------------------------------|
-| version   | `'10'`\*   | A specific major version to install |
-| action    | `:install` | Action(s) to perform                |
+| Property | Default    | Description                         |
+|----------|------------|-------------------------------------|
+| version  | `'10'`\*   | A specific major version to install |
+| action   | `:install` | Action(s) to perform                |
 
 * Parallels Desktop 10 is the latest version as of this writing. The default
   version is hardcoded for now, but work may be done in the future to have it
@@ -122,27 +123,12 @@ Actions:
 |-----------|---------------------------------------|
 | `:create` | Configure with a license, if provided |
 
-Attributes:
+Properties:
 
-| Attribute | Default   | Description             |
-|-----------|-----------|-------------------------|
-| license   | `nil`     | A Parallels license key |
-| action    | `:create` | Action(s) to perform    |
-
-Providers
-=========
-
-***Chef::Provider::Parallels***
-
-Parent provider that wraps installation and configuration under one resource.
-
-***Chef::Provider::ParallelsApp***
-
-Provider for app installation/removal.
-
-***Chef::Provider::ParallelsConfig***
-
-Provider for configuration.
+| Property | Default   | Description             |
+|----------|-----------|-------------------------|
+| license  | `nil`     | A Parallels license key |
+| action   | `:create` | Action(s) to perform    |
 
 Contributing
 ============
@@ -158,7 +144,7 @@ License & Authors
 =================
 - Author: Jonathan Hartman <j@p4nt5.com>
 
-Copyright 2015 Jonathan Hartman
+Copyright 2015-2016 Jonathan Hartman
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
