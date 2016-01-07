@@ -4,8 +4,9 @@ require_relative '../spec_helper'
 
 describe 'parallels::default' do
   let(:overrides) { {} }
+  let(:platform) { { platform: 'mac_os_x', version: '10.10' } }
   let(:runner) do
-    ChefSpec::SoloRunner.new do |node|
+    ChefSpec::SoloRunner.new(platform) do |node|
       overrides.each { |k, v| node.set[k] = v }
     end
   end
