@@ -7,7 +7,7 @@ maintainer_email 'j@p4nt5.com'
 license          'apache2'
 description      'Installs/configures Parallels'
 long_description 'Installs/configures Parallels'
-version          '0.1.0'
+version          '0.1.1'
 
 depends          'dmg', '~> 2.3'
 
