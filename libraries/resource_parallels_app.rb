@@ -26,7 +26,7 @@ class Chef
     #
     # @author Jonathan Hartman <j@p4nt5.com>
     class ParallelsApp < Resource
-      PATH ||= '/Applications/Parallels Desktop.app'
+      PATH ||= '/Applications/Parallels Desktop.app'.freeze
 
       provides :parallels_app, platform_family: 'mac_os_x'
 

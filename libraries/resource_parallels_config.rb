@@ -39,7 +39,7 @@ class Chef
       #
       action :create do
         ctl = ::File.join(ParallelsApp::PATH, 'Contents/MacOS/prlsrvctl')
-              .gsub(' ', '\\ ')
+                    .gsub(' ', '\\ ')
         execute 'Install Parallels license' do
           command "#{ctl} install-license -k #{license}"
           only_if { license }
