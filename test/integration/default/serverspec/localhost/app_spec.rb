@@ -2,7 +2,7 @@
 
 require_relative '../spec_helper'
 
-describe 'parallels::app' do
+describe 'parallels::default::app' do
   describe file('/Applications/Parallels Desktop.app') do
     it 'exists' do
       expect(subject).to be_directory

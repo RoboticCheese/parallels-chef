@@ -17,6 +17,6 @@ suites:
     run_list:
       - recipe[parallels]
     attributes:
-  - name: uninstall
+  - name: remove
     run_list:
-      - recipe[parallels_test::uninstall]
+      - recipe[parallels_test::remove]
